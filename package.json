@@ -1,0 +1,13 @@
+{
+  "name": "hmp-vercel-website-template",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "node ./scripts/build-static.mjs",
+    "dev": "vercel dev",
+    "preview": "npx serve dist"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
