@@ -2,7 +2,11 @@ node_modules/
 .next/
 dist/
 .vercel/
+.open-next/
+.wrangler/
+.npm-cache/
 .env.local
 .env.*.local
+.dev.vars
 *.tsbuildinfo
 .vercel

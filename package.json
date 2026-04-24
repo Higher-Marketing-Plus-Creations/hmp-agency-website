@@ -1,17 +1,21 @@
 {
-  "name": "hmp-vercel-website-template",
+  "name": "hmp-agency-website",
   "private": true,
   "version": "0.1.0",
   "scripts": {
     "build": "next build",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "dev": "next dev",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.19.4",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "wrangler": "^4.84.1",
     "typescript": "^5.9.3"
   },
   "dependencies": {

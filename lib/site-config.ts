@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
 
 const fallbackSiteUrl = "https://highermarketingplus.com";
-const vercelSiteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : undefined;
 
 export const siteConfig = {
   defaultOgDescription:
     "Strategy-first websites, local SEO, Google growth systems, and AI voice workflows built for service businesses.",
   defaultOgTitle: "Higher Marketing Plus",
   siteName: "Higher Marketing Plus",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? vercelSiteUrl ?? fallbackSiteUrl,
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl,
   socialCardType: "summary_large_image" as const
 };
 
