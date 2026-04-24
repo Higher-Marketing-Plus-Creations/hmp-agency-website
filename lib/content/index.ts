@@ -1,4 +1,4 @@
-import { createClient, groq } from "next-sanity";
+import { createClient } from "@sanity/client";
 
 import {
   caseStudies as localCaseStudies,
@@ -23,6 +23,7 @@ const projectId =
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? process.env.SANITY_DATASET ?? "";
 
 const sanityEnabled = Boolean(projectId && dataset);
+const groq = String.raw;
 
 const client = sanityEnabled
   ? createClient({

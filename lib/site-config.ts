@@ -17,7 +17,7 @@ export function normalizeUrl(path = "/") {
 
 export function createMetadata({
   description,
-  imagePath = "/opengraph-image",
+  imagePath = "/figma-assets/home-hero.jpg",
   noIndex = false,
   pathname = "/",
   title
