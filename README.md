@@ -7,7 +7,7 @@ This repo is now a `Next.js App Router` marketing stack designed for SEO-dominan
 - Static-first marketing pages for `services`, `case studies`, `insights`, `contact`, and `portal`
 - Route-level metadata, canonicals, JSON-LD, `robots.txt`, and `sitemap.xml`
 - Google Places review support with a Sanity testimonial fallback
-- Webhook-ready route handlers for contact and portal-access requests
+- Resend-backed route handlers for contact and portal-access requests
 - Embedded Sanity Studio scaffold with local fallback content so the site works before CMS credentials are wired up
 
 ## Local development
@@ -30,8 +30,9 @@ Copy `.env.example` to `.env.local` and fill in the values you want to activate.
 Core values:
 
 - `NEXT_PUBLIC_SITE_URL`
-- `CONTACT_WEBHOOK_URL`
-- `PORTAL_ACCESS_WEBHOOK_URL`
+- `RESEND_API_KEY`
+- `LEAD_EMAIL_TO`
+- `LEAD_EMAIL_FROM`
 
 Sanity values:
 
