@@ -47,16 +47,33 @@ export function VapiWidget() {
 
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.umd.cjs";
+    // Use the HTML script tag bundle — confirmed browser-compatible
+    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
     script.async = true;
     script.onload = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const V = (window as any).Vapi;
-      if (!V) return;
-      vapiRef.current = new V(VAPI_KEY);
-      vapiRef.current!.on("call-start", () => setState("active"));
-      vapiRef.current!.on("call-end", () => setState("idle"));
-      vapiRef.current!.on("error", (e: unknown) => {
+      const sdk = (window as any).vapiSDK;
+      if (!sdk?.run) return;
+
+      // Note how many body children exist before run() so we can hide whatever the SDK adds
+      const before = document.body.childElementCount;
+
+      // run() creates the Vapi instance AND appends a floating button to body
+      const instance = sdk.run({
+        apiKey: VAPI_KEY,
+        assistant: ASSISTANT,
+        config: { position: "bottom-right", offset: "24px" },
+      });
+
+      // Hide every DOM element the SDK just appended (its default button)
+      Array.from(document.body.children)
+        .slice(before)
+        .forEach((el) => ((el as HTMLElement).style.display = "none"));
+
+      vapiRef.current = instance;
+      instance.on("call-start", () => setState("active"));
+      instance.on("call-end", () => setState("idle"));
+      instance.on("error", (e: unknown) => {
         console.error("[Vapi]", e);
         setState("idle");
       });
