@@ -35,9 +35,15 @@ const ASSISTANT = {
 type CallState = "idle" | "loading" | "active";
 
 export function VapiWidget() {
+  const [visible, setVisible] = useState(false);
   const [state, setState] = useState<CallState>("idle");
   const [hover, setHover] = useState(false);
   const vapiRef = useRef<Record<string, (...args: unknown[]) => unknown> | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -77,6 +83,8 @@ export function VapiWidget() {
   const lift = hover && state === "idle" ? -2 : 0;
   const dotColor = isActive ? "#fb7185" : isLoading ? "#fbbf24" : "#22c55e";
 
+  if (!visible) return null;
+
   return (
     <>
       <style>{`
@@ -85,7 +93,8 @@ export function VapiWidget() {
         @keyframes vapi-wave{0%{transform:scaleY(.35)}100%{transform:scaleY(1)}}
         @keyframes vapi-spin{to{transform:rotate(360deg)}}
         @keyframes vapi-blink{0%,100%{opacity:1}50%{opacity:.5}}
-        .vapi-root{position:fixed;bottom:24px;right:24px;z-index:99999;display:inline-flex;align-items:center;padding:16px;cursor:pointer;user-select:none;-webkit-user-select:none}
+        @keyframes vapi-enter{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+        .vapi-root{position:fixed;bottom:24px;right:24px;z-index:99999;display:inline-flex;align-items:center;padding:16px;cursor:pointer;user-select:none;-webkit-user-select:none;animation:vapi-enter .5s cubic-bezier(.22,1,.36,1) forwards}
         .vapi-halo{position:absolute;left:0;top:50%;width:${SIZE * 1.9}px;height:${SIZE * 1.9}px;border-radius:50%;filter:blur(20px);pointer-events:none;animation:vapi-breathe 4s ease-in-out infinite;transition:opacity .45s ease,background .5s ease}
         .vapi-ripple{position:absolute;left:${16 + SIZE / 2}px;top:50%;transform:translate(-50%,-50%);width:${SIZE + 12}px;height:${SIZE + 12}px;border-radius:50%;border:2px solid rgba(56,189,248,.55);animation:vapi-ripple 2.2s cubic-bezier(.22,1,.36,1) infinite;pointer-events:none}
         .vapi-pill{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:999px;padding:6px 20px 6px 6px;transition:transform .4s ease,box-shadow .5s ease;position:relative;z-index:1}
