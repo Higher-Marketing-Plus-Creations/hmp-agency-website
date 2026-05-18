@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 // ─── Config ───────────────────────────────────────────────────────────────────
 const VAPI_KEY = "e8049e40-6b1e-41c3-ba99-fbfd16cf9a65";
 // Add your agent photo to /public/vapi-avatar.jpg in the repo
-const PHOTO = "/vapi-avatar.jpg";
+const PHOTO = "/figma-assets/assistant-photo.jpg";
 const SIZE = 56;
 const BARS = [0.3, 0.6, 1.0, 0.55, 0.85, 0.45, 0.7];
 
