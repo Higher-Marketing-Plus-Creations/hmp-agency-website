@@ -1,151 +1,188 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Vapi from "@vapi-ai/web";
 
-type CallState = "idle" | "connecting" | "active";
+// ─── Config ───────────────────────────────────────────────────────────────────
+const VAPI_KEY       = "e8049e40-6b1e-41c3-ba99-fbfd16cf9a65";
+const ASSISTANT_ID   = "f86f9947-20d8-4885-ab80-659ffa65b4bf";
+const PHOTO = "/figma-assets/assistant-photo.jpg";
+const SIZE = 56;
+const BARS = [0.3, 0.6, 1.0, 0.55, 0.85, 0.45, 0.7];
+// ─────────────────────────────────────────────────────────────────────────────
+
+type CallState = "idle" | "loading" | "active";
 
 export function VapiWidget() {
-  const vapiRef = useRef<Vapi | null>(null);
-  const [callState, setCallState] = useState<CallState>("idle");
-  const [isMuted, setIsMuted] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [state, setState] = useState<CallState>("idle");
+  const [hover, setHover] = useState(false);
+  const vapiRef = useRef<Record<string, (...args: unknown[]) => unknown> | null>(null);
 
   useEffect(() => {
-    const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
-    if (!publicKey) return;
+    const t = setTimeout(() => setVisible(true), 5000);
+    return () => clearTimeout(t);
+  }, []);
 
-    const vapi = new Vapi(publicKey);
-    vapiRef.current = vapi;
+  useEffect(() => {
+    const script = document.createElement("script");
+    // Use the HTML script tag bundle — confirmed browser-compatible
+    script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    script.async = true;
+    script.onload = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sdk = (window as any).vapiSDK;
+      if (!sdk?.run) return;
 
-    vapi.on("call-start", () => setCallState("active"));
-    vapi.on("call-end", () => {
-      setCallState("idle");
-      setIsMuted(false);
-      setIsSpeaking(false);
-    });
-    vapi.on("speech-start", () => setIsSpeaking(true));
-    vapi.on("speech-end", () => setIsSpeaking(false));
-    vapi.on("error", (e) => {
-      console.error("[Vapi]", e);
-      setCallState("idle");
-    });
+      // Note how many body children exist before run() so we can hide whatever the SDK adds
+      const before = document.body.childElementCount;
 
+      // run() creates the Vapi instance AND appends a floating button to body
+      const instance = sdk.run({
+        apiKey: VAPI_KEY,
+        assistantId: ASSISTANT_ID,
+        config: { position: "bottom-right", offset: "24px" },
+      });
+
+      // Hide every DOM element the SDK just appended (its default button)
+      Array.from(document.body.children)
+        .slice(before)
+        .forEach((el) => ((el as HTMLElement).style.display = "none"));
+
+      vapiRef.current = instance;
+      instance.on("call-start", () => setState("active"));
+      instance.on("call-end", () => setState("idle"));
+      instance.on("error", (e: unknown) => {
+        console.error("[Vapi]", e);
+        setState("idle");
+      });
+    };
+    document.body.appendChild(script);
     return () => {
-      vapi.stop();
+      vapiRef.current?.stop();
+      if (document.body.contains(script)) document.body.removeChild(script);
     };
   }, []);
 
-  function startCall() {
-    const vapi = vapiRef.current;
-    const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || "f86f9947-20d8-4885-ab80-659ffa65b4bf";
-    if (!vapi) return;
-    setCallState("connecting");
-    vapi.start(assistantId);
-  }
+  const toggle = () => {
+    if (!vapiRef.current || state === "loading") return;
+    if (state === "active") {
+      vapiRef.current.stop();
+    } else {
+      setState("loading");
+      (vapiRef.current.start(ASSISTANT_ID) as Promise<unknown>).catch(() => setState("idle"));
+    }
+  };
 
-  function endCall() {
-    vapiRef.current?.stop();
-  }
+  const isActive = state === "active";
+  const isLoading = state === "loading";
+  const lift = hover && state === "idle" ? -2 : 0;
+  const dotColor = isActive ? "#fb7185" : isLoading ? "#fbbf24" : "#22c55e";
 
-  function toggleMute(e: React.MouseEvent) {
-    e.stopPropagation();
-    const vapi = vapiRef.current;
-    if (!vapi) return;
-    const next = !isMuted;
-    vapi.setMuted(next);
-    setIsMuted(next);
-  }
-
-  const isActive = callState !== "idle";
-
-  if (!process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY) {
-    return null;
-  }
+  if (!visible) return null;
 
   return (
-    <div className="vapi-widget" role="complementary" aria-label="AI voice assistant">
-      {isActive && (
-        <div className="vapi-card">
-          <div className="vapi-card-header">
-            <div className="vapi-avatar">HM+</div>
-            <div className="vapi-card-info">
-              <div className="vapi-card-name">HM+ Assistant</div>
-              <div className={`vapi-card-status${isSpeaking ? " is-speaking" : ""}`}>
-                <span className="vapi-dot" />
-                {callState === "connecting" ? "Connecting…" : isSpeaking ? "Speaking" : "Listening"}
+    <>
+      <style>{`
+        @keyframes vapi-breathe{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.06)}}
+        @keyframes vapi-ripple{0%{transform:scale(.9);opacity:.75}100%{transform:scale(1.7);opacity:0}}
+        @keyframes vapi-wave{0%{transform:scaleY(.35)}100%{transform:scaleY(1)}}
+        @keyframes vapi-spin{to{transform:rotate(360deg)}}
+        @keyframes vapi-blink{0%,100%{opacity:1}50%{opacity:.5}}
+        @keyframes vapi-enter{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0)}}
+        .vapi-root{position:fixed;bottom:24px;right:24px;z-index:99999;display:inline-flex;align-items:center;padding:16px;cursor:pointer;user-select:none;-webkit-user-select:none;animation:vapi-enter .5s cubic-bezier(.22,1,.36,1) forwards}
+        .vapi-halo{position:absolute;left:0;top:50%;width:${SIZE * 1.9}px;height:${SIZE * 1.9}px;border-radius:50%;filter:blur(20px);pointer-events:none;animation:vapi-breathe 4s ease-in-out infinite;transition:opacity .45s ease,background .5s ease}
+        .vapi-ripple{position:absolute;left:${16 + SIZE / 2}px;top:50%;transform:translate(-50%,-50%);width:${SIZE + 12}px;height:${SIZE + 12}px;border-radius:50%;border:2px solid rgba(56,189,248,.55);animation:vapi-ripple 2.2s cubic-bezier(.22,1,.36,1) infinite;pointer-events:none}
+        .vapi-pill{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:999px;padding:6px 20px 6px 6px;transition:transform .4s ease,box-shadow .5s ease;position:relative;z-index:1}
+        .vapi-avatar{width:${SIZE}px;height:${SIZE}px;border-radius:50%;background-image:url("${PHOTO}");background-size:cover;background-position:center;background-color:#e5e7eb;position:relative;overflow:hidden;box-shadow:inset 0 -8px 18px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.2)}
+        .vapi-wave-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,transparent 0%,rgba(15,23,42,.7) 50%,rgba(15,23,42,.9) 100%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:${Math.round(SIZE * 0.08)}px;gap:${Math.round(SIZE * 0.04)}px;transition:height .35s cubic-bezier(.22,1,.36,1);overflow:hidden}
+        .vapi-bar{border-radius:999px;background:linear-gradient(180deg,#7dd3fc,#38bdf8);box-shadow:0 0 4px rgba(56,189,248,.6);transform-origin:bottom center;animation:vapi-wave ease-in-out infinite alternate}
+        .vapi-spin-ring{position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(from 0deg,#38bdf8,#a78bfa,#22d3ee,#38bdf8);animation:vapi-spin 3s linear infinite;-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
+        .vapi-status-dot{position:absolute;bottom:0;right:0;width:${Math.round(SIZE * 0.26)}px;height:${Math.round(SIZE * 0.26)}px;border-radius:50%;border:2.5px solid #fff;transition:background .3s ease}
+        .vapi-text{display:flex;flex-direction:column;gap:2px}
+        .vapi-label{font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;font-size:13.5px;font-weight:600;color:#1c1917;letter-spacing:-.01em;white-space:nowrap}
+        .vapi-sublabel{font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;font-size:11.5px;font-weight:500;color:#a8a29e;display:flex;align-items:center;gap:5px;white-space:nowrap}
+        .vapi-dot-sm{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0}
+      `}</style>
+
+      <div
+        className="vapi-root"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={toggle}
+        role="button"
+        aria-label={isActive ? "End call" : "Start voice call with Higher Marketing Plus"}
+      >
+        {/* Soft halo */}
+        <div
+          className="vapi-halo"
+          style={{
+            background: isActive
+              ? "radial-gradient(circle,rgba(125,211,252,.55) 0%,rgba(167,139,250,.22) 45%,transparent 70%)"
+              : "radial-gradient(circle,rgba(251,146,60,.45) 0%,rgba(251,113,133,.2) 45%,transparent 70%)",
+            opacity: isActive ? 0.9 : hover ? 0.7 : 0.5,
+          }}
+        />
+
+        {/* Ripple rings when active */}
+        {isActive && (
+          <>
+            <div className="vapi-ripple" style={{ animationDelay: "0s" }} />
+            <div className="vapi-ripple" style={{ animationDelay: "0.9s" }} />
+          </>
+        )}
+
+        {/* Pill */}
+        <div
+          className="vapi-pill"
+          style={{
+            boxShadow: isActive
+              ? "0 16px 40px rgba(56,189,248,.28),0 2px 6px rgba(0,0,0,.07),inset 0 1px 1px rgba(255,255,255,.95),0 0 0 1px rgba(255,255,255,.7)"
+              : "0 14px 36px rgba(244,114,82,.22),0 2px 6px rgba(0,0,0,.06),inset 0 1px 1px rgba(255,255,255,.9),0 0 0 1px rgba(255,255,255,.6)",
+            transform: `translateY(${lift}px)`,
+          }}
+        >
+          {/* Avatar */}
+          <div style={{ position: "relative" }}>
+            {isActive && <div className="vapi-spin-ring" />}
+            <div className="vapi-avatar">
+              <div className="vapi-wave-overlay" style={{ height: isActive ? "38%" : "0%" }}>
+                {BARS.map((h, i) => (
+                  <div
+                    key={i}
+                    className="vapi-bar"
+                    style={{
+                      width: SIZE * 0.05,
+                      height: `${h * 55}%`,
+                      animationDuration: `${0.45 + i * 0.07}s`,
+                      animationDelay: `${i * 0.05}s`,
+                      animationPlayState: isActive ? "running" : "paused",
+                    }}
+                  />
+                ))}
               </div>
             </div>
+            <div
+              className="vapi-status-dot"
+              style={{
+                background: dotColor,
+                boxShadow: isActive ? "0 0 8px rgba(251,113,133,.7)" : "0 0 6px rgba(34,197,94,.4)",
+                animation: isActive || isLoading ? "vapi-blink 1s ease-in-out infinite" : "none",
+              }}
+            />
           </div>
-          <div className="vapi-card-actions">
-            <button
-              className={`vapi-mute-btn${isMuted ? " is-muted" : ""}`}
-              onClick={toggleMute}
-              aria-label={isMuted ? "Unmute microphone" : "Mute microphone"}
-            >
-              {isMuted ? <UnmuteIcon /> : <MuteIcon />}
-              <span>{isMuted ? "Unmute" : "Mute"}</span>
-            </button>
-            <button className="vapi-end-btn" onClick={endCall} aria-label="End call">
-              <PhoneOffIcon />
-              <span>End call</span>
-            </button>
+
+          {/* Text */}
+          <div className="vapi-text">
+            <div className="vapi-label">
+              {isActive ? "I'm listening…" : isLoading ? "Connecting…" : "Hi! Got a question?"}
+            </div>
+            <div className="vapi-sublabel">
+              <span className="vapi-dot-sm" style={{ background: dotColor }} />
+              {isActive ? "Speak now" : isLoading ? "Please wait" : "Tap to talk"}
+            </div>
           </div>
         </div>
-      )}
-
-      <button
-        className={`vapi-trigger${isActive ? " is-active" : ""}${isSpeaking ? " is-speaking" : ""}`}
-        onClick={isActive ? endCall : startCall}
-        aria-label={isActive ? "End AI voice call" : "Talk to our AI assistant"}
-      >
-        <span className="vapi-trigger-ring" />
-        {isActive ? <PhoneOffIcon /> : <MicIcon />}
-        {!isActive && <span className="vapi-trigger-label">Talk to AI</span>}
-      </button>
-    </div>
-  );
-}
-
-function MicIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" />
-      <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9" y1="22" x2="15" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function PhoneOffIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M17.5 18.5c-5 0-9.5-4.5-9.5-9.5 0-1.1.2-2.1.5-3L6 4C4.7 5.7 4 7.8 4 10c0 5.5 4.5 10 10 10 2.2 0 4.3-.7 6-2l-2-2.5c-.8.3-1.7.5-2.5.5z"
-        fill="currentColor"
-      />
-      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function MuteIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" />
-      <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function UnmuteIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" />
-      <path d="M5 11a7 7 0 0 0 14 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
+      </div>
+    </>
   );
 }
