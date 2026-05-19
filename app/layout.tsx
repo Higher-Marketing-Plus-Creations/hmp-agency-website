@@ -48,8 +48,8 @@ const HMP_WIDGET_SCRIPT = `
   var r1=document.createElement("div"); r1.className="hmp-ripple"; r1.style.display="none"; r1.style.animationDelay="0s";
   var r2=document.createElement("div"); r2.className="hmp-ripple"; r2.style.display="none"; r2.style.animationDelay="0.85s";
   root.appendChild(r1); root.appendChild(r2);
-  document.body.appendChild(root);
-  document.getElementById("hmp-avatar").style.backgroundImage="url('"+PHOTO_URL+"')";
+  // Avatar photo set now while element is still off-DOM
+  root.querySelector("#hmp-avatar").style.backgroundImage="url('"+PHOTO_URL+"')";
 
   var state="idle", vapiInstance=null;
   var halo=document.getElementById("hmp-halo"),pill=document.getElementById("hmp-pill"),spinRing=document.getElementById("hmp-spin-ring"),wave=document.getElementById("hmp-wave-overlay"),dot=document.getElementById("hmp-dot"),dotSm=document.getElementById("hmp-dot-sm"),label=document.getElementById("hmp-label"),subText=document.getElementById("hmp-sub-text"),bars=document.querySelectorAll(".hmp-bar");
@@ -73,6 +73,7 @@ const HMP_WIDGET_SCRIPT = `
     instance.on("error",function(e){console.error("[HMP Vapi]",e);setIdle();});
   }
 
+  // Load SDK silently in background immediately so it's ready when widget appears
   var sdkScript=document.createElement("script");
   sdkScript.src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
   sdkScript.async=true;
@@ -85,8 +86,8 @@ const HMP_WIDGET_SCRIPT = `
     else{setLoading();vapiInstance.start(ASSISTANT_ID).catch(function(){setIdle();});}
   });
 
-  root.style.opacity="0";root.style.pointerEvents="none";
-  setTimeout(function(){root.style.transition="opacity .4s";root.style.opacity="1";root.style.pointerEvents="auto";setIdle();},5000);
+  // Don't add widget to DOM until 5 seconds — prevents the enter animation firing immediately
+  setTimeout(function(){document.body.appendChild(root);setIdle();},5000);
 })();
 `;
 
