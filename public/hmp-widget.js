@@ -3,7 +3,7 @@
   "use strict";
   var VAPI_PUBLIC_KEY = "e8049e40-6b1e-41c3-ba99-fbfd16cf9a65";
   var ASSISTANT_ID    = "f86f9947-20d8-4885-ab80-659ffa65b4bf";
-  var PHOTO_URL       = "https://highermarketingplus.com/figma-assets/assistant-photo.jpg";
+  var PHOTO_URL       = "https://highermarketingplus.com/figma-assets/agent-male.jpg";
 
   var css = [
     "@keyframes hmp-enter{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}",
