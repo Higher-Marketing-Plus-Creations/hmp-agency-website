@@ -61,23 +61,17 @@ const HMP_WIDGET_SCRIPT = `
   root.addEventListener("mouseenter",function(){if(state==="idle"){halo.style.opacity=".75";pill.style.transform="translateY(-2px)";}});
   root.addEventListener("mouseleave",function(){if(state==="idle"){halo.style.opacity=".55";pill.style.transform="translateY(0)";}});
 
-  function initVapi(){
-    var sdk=window.vapiSDK;
-    if(!sdk||!sdk.run)return;
-    var before=document.body.childElementCount;
-    var instance=sdk.run({apiKey:VAPI_PUBLIC_KEY,assistant:ASSISTANT_ID,config:{position:"bottom-right",offset:"0px"}});
-    Array.from(document.body.children).slice(before).forEach(function(el){el.style.display="none";});
-    vapiInstance=instance;
-    instance.on("call-start",function(){setActive();});
-    instance.on("call-end",function(){setIdle();});
-    instance.on("error",function(e){console.error("[HMP Vapi]",e);setIdle();});
-  }
-
-  // Load SDK silently in background immediately so it's ready when widget appears
+  // Load VAPI Web SDK (UMD build) — exposes window.Vapi
   var sdkScript=document.createElement("script");
-  sdkScript.src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+  sdkScript.src="https://cdn.jsdelivr.net/npm/@vapi-ai/web/dist/vapi.umd.js";
   sdkScript.async=true;
-  sdkScript.onload=function(){setTimeout(initVapi,100);};
+  sdkScript.onload=function(){
+    var vapi=new window.Vapi(VAPI_PUBLIC_KEY);
+    vapiInstance=vapi;
+    vapi.on("call-start",function(){setActive();});
+    vapi.on("call-end",function(){setIdle();});
+    vapi.on("error",function(e){console.error("[HMP Vapi]",e);setIdle();});
+  };
   document.head.appendChild(sdkScript);
 
   root.addEventListener("click",function(){
