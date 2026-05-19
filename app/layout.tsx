@@ -11,8 +11,26 @@ const HMP_WIDGET_SCRIPT = `
 (function () {
   "use strict";
   var VAPI_PUBLIC_KEY = "e8049e40-6b1e-41c3-ba99-fbfd16cf9a65";
-  var ASSISTANT_ID    = "f86f9947-20d8-4885-ab80-659ffa65b4bf";
   var PHOTO_URL       = "https://highermarketingplus.com/figma-assets/assistant-photo.jpg";
+
+  var ASSISTANT = {
+    name: "Alex",
+    firstMessage: "Hey! Thanks for checking us out. I'm Alex with Higher Marketing Plus — what's the name of your business?",
+    transcriber: { provider: "deepgram", model: "nova-2", language: "en-US" },
+    voice: { provider: "11labs", voiceId: "burt", model: "eleven_turbo_v2_5", stability: 0.45, similarityBoost: 0.82, useSpeakerBoost: true, optimizeStreamingLatency: 3 },
+    model: {
+      provider: "openai", model: "gpt-4o", temperature: 0.7,
+      messages: [{ role: "system", content: "You are Alex, a friendly and knowledgeable AI concierge for Higher Marketing Plus — a results-driven digital agency based in Joplin, MO, serving businesses nationwide.\n\nTagline: \"See Your Business From a Different Altitude.\"\n\nServices: Web Development (custom websites, fast, mobile-first), Local SEO (dominate local search in Joplin and beyond), Google Experts (Google Business Profile, Ads, Analytics), AI Voice Agents (24/7 call handling, lead qualification, appointment booking — under $1/lead, zero staff required), Full-Service Package (all four working together).\n\nKey facts: 8+ years, 50+ clients, 185% avg conversion lift, 100% client satisfaction. Based in Joplin MO, serving clients nationwide. Contact: hello@highermarketingplus.com, (417) 555-0182. Free 30-min strategy call.\n\nYour goals: greet warmly, understand their business, qualify their needs, encourage them to book a free strategy call, capture name + email + phone.\n\nPricing: never quote exact prices. Say packages are custom-built and a strategy call produces the right quote. AI voice agents are under $1 per lead.\n\nTone: warm, confident, consultative. Ask one question at a time. This is a voice call — be concise.\n\nNever make up pricing, timelines, or guarantees. If unsure: 'I want to make sure I give you accurate info — someone from our team will confirm that detail when they follow up.'" }]
+    },
+    server: { url: "https://hmp.app.n8n.cloud/webhook/vapi/hmp-aria" },
+    serverMessages: ["end-of-call-report"],
+    analysisPlan: {
+      summaryPrompt: "Summarize this call in 2-3 sentences: what the caller was looking for, whether they are a qualified lead, and what the next step is.",
+      structuredDataSchema: { type: "object", properties: { callerName: { type: "string" }, callerPhone: { type: "string" }, callerEmail: { type: "string" }, businessName: { type: "string" }, serviceRequested: { type: "string" }, serviceCity: { type: "string" }, urgencyLevel: { type: "string", enum: ["emergency","this_week","flexible","researching"] }, callOutcome: { type: "string" }, qualifiedLead: { type: "string", enum: ["yes","no","unsure"] }, followUpRequired: { type: "boolean" }, escalationTriggered: { type: "boolean" }, appointmentBooked: { type: "boolean" }, isNewCustomer: { type: "boolean" }, leadSource: { type: "string" } } }
+    },
+    endCallFunctionEnabled: true,
+    endCallPhrases: ["goodbye", "bye", "talk later", "thanks bye", "have a good one"]
+  };
 
   var css = [
     "@keyframes hmp-enter{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}",
@@ -61,23 +79,27 @@ const HMP_WIDGET_SCRIPT = `
   root.addEventListener("mouseenter",function(){if(state==="idle"){halo.style.opacity=".75";pill.style.transform="translateY(-2px)";}});
   root.addEventListener("mouseleave",function(){if(state==="idle"){halo.style.opacity=".55";pill.style.transform="translateY(0)";}});
 
-  // Load VAPI Web SDK (UMD build) — exposes window.Vapi
+  // html-script-tag is the correct browser CDN SDK — confirmed working
   var sdkScript=document.createElement("script");
-  sdkScript.src="https://cdn.jsdelivr.net/npm/@vapi-ai/web/dist/vapi.umd.js";
+  sdkScript.src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
   sdkScript.async=true;
   sdkScript.onload=function(){
-    var vapi=new window.Vapi(VAPI_PUBLIC_KEY);
-    vapiInstance=vapi;
-    vapi.on("call-start",function(){setActive();});
-    vapi.on("call-end",function(){setIdle();});
-    vapi.on("error",function(e){console.error("[HMP Vapi]",e);setIdle();});
+    var sdk=window.vapiSDK;
+    if(!sdk||!sdk.run)return;
+    var before=document.body.childElementCount;
+    var instance=sdk.run({apiKey:VAPI_PUBLIC_KEY,assistant:ASSISTANT,config:{position:"bottom-right",offset:"0px"}});
+    Array.from(document.body.children).slice(before).forEach(function(el){el.style.display="none";});
+    vapiInstance=instance;
+    instance.on("call-start",function(){setActive();});
+    instance.on("call-end",function(){setIdle();});
+    instance.on("error",function(e){console.error("[HMP Vapi]",e);setIdle();});
   };
   document.head.appendChild(sdkScript);
 
   root.addEventListener("click",function(){
     if(!vapiInstance||state==="loading")return;
     if(state==="active"){vapiInstance.stop();}
-    else{setLoading();vapiInstance.start(ASSISTANT_ID).catch(function(){setIdle();});}
+    else{setLoading();vapiInstance.start(ASSISTANT).catch(function(){setIdle();});}
   });
 
   // Don't add widget to DOM until 5 seconds — prevents the enter animation firing immediately
