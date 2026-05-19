@@ -3,7 +3,6 @@ import { Manrope, Sora } from "next/font/google";
 
 import { siteSettings } from "@/lib/content/local-data";
 import { createMetadata } from "@/lib/site-config";
-import { VapiWidget } from "@/components/vapi-widget";
 
 import "@/app/globals.css";
 
@@ -36,7 +35,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           Skip to content
         </a>
         <main id="main-content">{children}</main>
-        <VapiWidget />
       </body>
     </html>
   );
