@@ -86,7 +86,7 @@ const HMP_WIDGET_SCRIPT = `
   });
 
   root.style.opacity="0";root.style.pointerEvents="none";
-  setTimeout(function(){root.style.transition="opacity .4s";root.style.opacity="1";root.style.pointerEvents="auto";setIdle();},3000);
+  setTimeout(function(){root.style.transition="opacity .4s";root.style.opacity="1";root.style.pointerEvents="auto";setIdle();},5000);
 })();
 `;
 
