@@ -70,14 +70,15 @@ const HMP_WIDGET_SCRIPT = `
   root.querySelector("#hmp-avatar").style.backgroundImage="url('"+PHOTO_URL+"')";
 
   var state="idle", vapiInstance=null;
-  var halo=document.getElementById("hmp-halo"),pill=document.getElementById("hmp-pill"),spinRing=document.getElementById("hmp-spin-ring"),wave=document.getElementById("hmp-wave-overlay"),dot=document.getElementById("hmp-dot"),dotSm=document.getElementById("hmp-dot-sm"),label=document.getElementById("hmp-label"),subText=document.getElementById("hmp-sub-text"),bars=document.querySelectorAll(".hmp-bar");
+  // These are declared here but assigned after appendChild in the timeout
+  var halo,pill,spinRing,wave,dot,dotSm,label,subText,bars;
 
   function setIdle(){state="idle";root.setAttribute("aria-label","Talk to our AI assistant");halo.style.background="radial-gradient(circle,rgba(251,146,60,.42) 0%,rgba(251,113,133,.18) 45%,transparent 70%)";halo.style.opacity=".55";pill.style.boxShadow="0 12px 32px rgba(244,114,82,.2),0 2px 6px rgba(0,0,0,.06),inset 0 1px 1px rgba(255,255,255,.9)";pill.style.transform="translateY(0)";spinRing.style.display="none";wave.style.height="0%";r1.style.display=r2.style.display="none";bars.forEach(function(b){b.style.animationPlayState="paused";});dot.style.background="#22c55e";dot.style.boxShadow="0 0 6px rgba(34,197,94,.4)";dot.style.animation="none";dotSm.style.background="#22c55e";label.textContent="Hi! Got a question?";subText.textContent="Tap to talk";}
   function setLoading(){state="loading";label.textContent="Connecting…";subText.textContent="Please wait";dot.style.background="#fbbf24";dot.style.animation="hmp-blink 1s ease-in-out infinite";dotSm.style.background="#fbbf24";}
   function setActive(){state="active";root.setAttribute("aria-label","End voice call");halo.style.background="radial-gradient(circle,rgba(125,211,252,.5) 0%,rgba(167,139,250,.2) 45%,transparent 70%)";halo.style.opacity=".9";pill.style.boxShadow="0 14px 36px rgba(56,189,248,.25),0 2px 6px rgba(0,0,0,.07),inset 0 1px 1px rgba(255,255,255,.95)";spinRing.style.display="block";wave.style.height="42%";r1.style.display=r2.style.display="block";bars.forEach(function(b){b.style.animationPlayState="running";});dot.style.background="#fb7185";dot.style.boxShadow="0 0 8px rgba(251,113,133,.65)";dot.style.animation="hmp-blink 1s ease-in-out infinite";dotSm.style.background="#fb7185";label.textContent="I’m listening…";subText.textContent="Speak now";}
 
-  root.addEventListener("mouseenter",function(){if(state==="idle"){halo.style.opacity=".75";pill.style.transform="translateY(-2px)";}});
-  root.addEventListener("mouseleave",function(){if(state==="idle"){halo.style.opacity=".55";pill.style.transform="translateY(0)";}});
+  root.addEventListener("mouseenter",function(){if(state==="idle"&&halo){halo.style.opacity=".75";pill.style.transform="translateY(-2px)";}});
+  root.addEventListener("mouseleave",function(){if(state==="idle"&&halo){halo.style.opacity=".55";pill.style.transform="translateY(0)";}});
 
   // html-script-tag is the correct browser CDN SDK — confirmed working
   var sdkScript=document.createElement("script");
@@ -103,7 +104,20 @@ const HMP_WIDGET_SCRIPT = `
   });
 
   // Don't add widget to DOM until 5 seconds — prevents the enter animation firing immediately
-  setTimeout(function(){document.body.appendChild(root);setIdle();},5000);
+  setTimeout(function(){
+    document.body.appendChild(root);
+    // Assign element refs NOW that the element is in the DOM
+    halo=root.querySelector("#hmp-halo");
+    pill=root.querySelector("#hmp-pill");
+    spinRing=root.querySelector("#hmp-spin-ring");
+    wave=root.querySelector("#hmp-wave-overlay");
+    dot=root.querySelector("#hmp-dot");
+    dotSm=root.querySelector("#hmp-dot-sm");
+    label=root.querySelector("#hmp-label");
+    subText=root.querySelector("#hmp-sub-text");
+    bars=root.querySelectorAll(".hmp-bar");
+    setIdle();
+  },5000);
 })();
 `;
 
