@@ -65,7 +65,7 @@ const HMP_WIDGET_SCRIPT = `
     var sdk=window.vapiSDK;
     if(!sdk||!sdk.run)return;
     var before=document.body.childElementCount;
-    var instance=sdk.run({apiKey:VAPI_PUBLIC_KEY,assistantId:ASSISTANT_ID,config:{position:"bottom-right",offset:"0px"}});
+    var instance=sdk.run({apiKey:VAPI_PUBLIC_KEY,assistant:ASSISTANT_ID,config:{position:"bottom-right",offset:"0px"}});
     Array.from(document.body.children).slice(before).forEach(function(el){el.style.display="none";});
     vapiInstance=instance;
     instance.on("call-start",function(){setActive();});
