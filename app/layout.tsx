@@ -38,7 +38,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           Skip to content
         </a>
         <main id="main-content">{children}</main>
-        <Script src="/hmp-widget.js" strategy="afterInteractive" />
         <Script id="tawk-to-chat" strategy="afterInteractive">
           {`
             var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
