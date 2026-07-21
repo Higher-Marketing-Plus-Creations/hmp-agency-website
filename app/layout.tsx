@@ -47,19 +47,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             })(window, document, "clarity", "script", "x7jh7wu8uo");
           `}
         </Script>
-        <Script id="tawk-to-chat" strategy="afterInteractive">
-          {`
-            var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-            (function() {
-              var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-              s1.async = true;
-              s1.src = "https://embed.tawk.to/6a2275f418ebf31c2bb3eff9/1jqb9pgdg";
-              s1.charset = "UTF-8";
-              s1.setAttribute("crossorigin", "*");
-              s0.parentNode.insertBefore(s1, s0);
-            })();
-          `}
-        </Script>
+        <Script
+          id="ze-snippet"
+          src="https://static.zdassets.com/ekr/snippet.js?key=5cf0f9d1-e63d-41cb-80fd-c528499d53a5"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
