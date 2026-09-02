@@ -265,7 +265,7 @@ function DevelopmentServicePage({ bookingUrl, contactEmail, service, supportPhon
         title="The Problem"
       />
       <FeatureGridSection
-        intro="Every Higher Marketing+ website is custom-designed, conversion-focused, and built on a foundation that search engines love."
+        intro="Every Higher Marketing Plus website is custom-designed, conversion-focused, and built on a foundation that search engines love."
         items={[
           { description: "No templates. No shortcuts. Your brand, done right.", icon: Code, title: "Custom Design" },
           {

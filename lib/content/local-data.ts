@@ -152,7 +152,7 @@ export const services: Service[] = [
     ],
     featureHeading: "Built from Scratch. Built to Win.",
     featureIntro:
-      "Every Higher Marketing+ website is custom-designed, conversion-focused, and built on a foundation that search engines love.",
+      "Every Higher Marketing Plus website is custom-designed, conversion-focused, and built on a foundation that search engines love.",
     featureItems: [
       { title: "Custom Design", description: "No templates. No shortcuts. Your brand, done right." },
       {

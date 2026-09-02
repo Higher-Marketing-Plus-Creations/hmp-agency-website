@@ -230,7 +230,7 @@ export function MakeHomePage({ bookingUrl, contactEmail, supportPhone }: MakeHom
             </h1>
 
             <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-zinc-400 md:text-2xl">
-              Higher Marketing+ combines AI-powered tools, data-driven strategy, and full-service execution to grow
+              Higher Marketing Plus combines AI-powered tools, data-driven strategy, and full-service execution to grow
               your business faster than anything you&apos;ve tried before.
             </p>
 
