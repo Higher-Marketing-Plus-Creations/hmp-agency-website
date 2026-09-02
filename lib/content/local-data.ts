@@ -505,7 +505,44 @@ export const services: Service[] = [
   }
 ];
 
-export const caseStudies: CaseStudy[] = [];
+export const caseStudies: CaseStudy[] = [
+  {
+    challenge: "",
+    highlights: [],
+    implementation: "",
+    result: "",
+    serviceSlugs: [],
+    slug: "essential-autowerks-seo",
+    strategy: "",
+    summary:
+      "+54.2% organic click growth, +226.5% Google Business Profile interaction growth, and top-3 local visibility across five documented Nixa searches.",
+    title: "Essential Autowerks"
+  },
+  {
+    challenge: "",
+    highlights: [],
+    implementation: "",
+    result: "",
+    serviceSlugs: [],
+    slug: "imperial-landscaping-seo",
+    strategy: "",
+    summary:
+      "+450% 28-day organic click growth, ranking overview expansion from 13 to 158, and 17 Google Business Profile calls.",
+    title: "Imperial Landscaping"
+  },
+  {
+    challenge: "",
+    highlights: [],
+    implementation: "",
+    result: "",
+    serviceSlugs: [],
+    slug: "won-communications-seo",
+    strategy: "",
+    summary:
+      "+300% organic click growth, +862% search impression growth, and AI citations increasing from 21 to 91.",
+    title: "Won Communications"
+  }
+];
 
 export const insights: Insight[] = [];
 
