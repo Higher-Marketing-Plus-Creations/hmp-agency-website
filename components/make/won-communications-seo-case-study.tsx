@@ -20,8 +20,8 @@ const tags = ["SEO", "Content SEO", "Local SEO", "AI Search", "Google Business P
 const heroMetrics = [
   { label: "Organic Click Growth", note: "Latest 28 Days", value: "+300%" },
   { label: "Search Impression Growth", note: "Latest 28 Days", value: "+862%" },
-  { label: "Average Search Position", note: "Improved by 14.6 positions", value: "25.7 to 11.1" },
-  { label: "Ranking Overview Total", note: "Up from 284", value: "593" }
+  { label: "Ranking Overview Total", note: "Up from 284", value: "593" },
+  { label: "Average Search Position", note: "Improved by 14.6 positions", value: "25.7 to 11.1" }
 ];
 
 const overview = [
@@ -201,16 +201,30 @@ function SectionHeading({ copy, eyebrow, title }: { copy?: string; eyebrow: stri
   );
 }
 
-function EvidenceFrame({ alt, children, src }: { alt: string; children?: ReactNode; src: string }) {
+function EvidenceFrame({
+  alt,
+  children,
+  className = "",
+  imageClassName = "h-auto w-full rounded-2xl",
+  imageWrapClassName = "bg-zinc-950/70 p-3",
+  src
+}: {
+  alt: string;
+  children?: ReactNode;
+  className?: string;
+  imageClassName?: string;
+  imageWrapClassName?: string;
+  src: string;
+}) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30">
+    <div className={`overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30 ${className}`}>
       <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-5 py-4">
         <span className="h-3 w-3 rounded-full bg-red-400/80" />
         <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
         <span className="h-3 w-3 rounded-full bg-green-400/80" />
       </div>
-      <div className="bg-zinc-950/70 p-3">
-        <Image alt={alt} className="h-auto w-full rounded-2xl" height={620} sizes="(max-width: 768px) 100vw, 50vw" src={src} width={900} />
+      <div className={imageWrapClassName}>
+        <Image alt={alt} className={imageClassName} height={620} sizes="(max-width: 768px) 100vw, 50vw" src={src} width={900} />
       </div>
       {children ? <div className="border-t border-white/10 p-5">{children}</div> : null}
     </div>
@@ -229,20 +243,20 @@ function ComparisonCard({
   note: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <div className="flex h-full flex-col border-t border-white/15 py-5 lg:border-t-0 lg:border-l lg:pl-6 lg:first:border-l-0 lg:first:pl-0">
       <span className="text-sm uppercase tracking-[0.18em] text-zinc-500">{label}</span>
-      <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
-          <span className="text-sm text-zinc-500">Before</span>
-          <strong className="mt-2 block text-4xl text-white">{before}</strong>
+      <div className="mt-6 flex items-end gap-4">
+        <div>
+          <span className="block text-xs uppercase tracking-[0.16em] text-zinc-500">Before</span>
+          <strong className="mt-2 block text-3xl leading-none text-white">{before}</strong>
         </div>
-        <ArrowRight className="hidden h-5 w-5 text-[#2196F3] sm:block" />
-        <div className="rounded-2xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-5">
-          <span className="text-sm text-zinc-400">After</span>
-          <strong className="mt-2 block text-4xl text-white">{after}</strong>
+        <span className="pb-1 text-zinc-600">to</span>
+        <div>
+          <span className="block text-xs uppercase tracking-[0.16em] text-[#2196F3]">After</span>
+          <strong className="mt-2 block text-3xl leading-none text-[#2196F3]">{after}</strong>
         </div>
       </div>
-      <p className="mt-4 text-[#F59E0B]">{note}</p>
+      <span className="mt-5 text-sm leading-relaxed text-[#F59E0B]">{note}</span>
     </div>
   );
 }
@@ -256,8 +270,8 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
         <section className="relative overflow-hidden px-6 pb-20 pt-32 md:pt-36">
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-black to-black" />
           <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:40px_40px]" />
-          <div className="relative z-10 mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)] lg:items-start">
-            <Reveal>
+          <div className="relative z-10 mx-auto grid max-w-6xl items-stretch gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
+            <Reveal className="h-full">
               <div className="mb-6 inline-flex rounded-full border border-[#2196F3]/20 bg-[#2196F3]/10 px-4 py-2 text-sm text-[#2196F3]">
                 SEO + AI Search Case Study
               </div>
@@ -277,20 +291,26 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 ))}
               </div>
             </Reveal>
-            <Reveal className="grid self-start gap-4 sm:grid-cols-2" delay={0.12}>
-              {heroMetrics.map((metric, index) => (
-                <motion.div
-                  className={`min-w-0 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm ${index === 0 ? "sm:col-span-2" : ""}`}
-                  key={metric.label}
-                  whileHover={{ y: -4 }}
-                >
-                  <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
-                    {metric.value}
-                  </strong>
-                  <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
-                  <span className="mt-2 block text-sm text-zinc-500">{metric.note}</span>
-                </motion.div>
-              ))}
+            <Reveal className="flex h-full items-center" delay={0.12}>
+              <div className="grid w-full gap-4 sm:grid-cols-2">
+                {heroMetrics.map((metric, index) => (
+                  <motion.div
+                    className={`flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm ${
+                      metric.label === "Organic Click Growth" || metric.label === "Average Search Position"
+                        ? "sm:col-span-2"
+                        : ""
+                    }`}
+                    key={metric.label}
+                    whileHover={{ y: -4 }}
+                  >
+                    <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
+                      {metric.value}
+                    </strong>
+                    <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
+                    <span className="mt-2 block text-sm text-zinc-500">{metric.note}</span>
+                  </motion.div>
+                ))}
+              </div>
             </Reveal>
           </div>
         </section>
@@ -325,14 +345,26 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 title="More Than Ranking a Few Keywords"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Reveal>
-                <EvidenceFrame alt="WON Communications ranking overview on July 4 2026 showing total of 284" src="/images/wc-keywords-ranking-1.png">
+            <div className="grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="h-full">
+                <EvidenceFrame
+                  alt="WON Communications ranking overview on July 4 2026 showing total of 284"
+                  className="flex h-full min-h-[620px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[520px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/wc-keywords-ranking-1.png"
+                >
                   <p className="text-sm text-zinc-400">July 4, 2026: ranking overview total of 284.</p>
                 </EvidenceFrame>
               </Reveal>
-              <Reveal delay={0.08}>
-                <EvidenceFrame alt="WON Communications ranking overview on August 1 2026 showing total of 593" src="/images/wc-keywords-ranking-2.png">
+              <Reveal className="h-full" delay={0.08}>
+                <EvidenceFrame
+                  alt="WON Communications ranking overview on August 1 2026 showing total of 593"
+                  className="flex h-full min-h-[620px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[520px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/wc-keywords-ranking-2.png"
+                >
                   <p className="text-sm text-zinc-400">August 1, 2026: ranking overview total of 593.</p>
                 </EvidenceFrame>
               </Reveal>
@@ -379,14 +411,14 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 title="469 Organic Clicks and 86.8K Search Impressions"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Reveal>
+            <div className="grid gap-6 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-1 md:grid-cols-3 md:px-8">
+              <Reveal className="h-full">
                 <ComparisonCard after="469" before="117" label="Total Clicks" note="+352 clicks, +300%" />
               </Reveal>
-              <Reveal delay={0.05}>
+              <Reveal className="h-full" delay={0.05}>
                 <ComparisonCard after="86.8K" before="9.02K" label="Total Impressions" note="+77.78K impressions, +862%" />
               </Reveal>
-              <Reveal delay={0.1}>
+              <Reveal className="h-full" delay={0.1}>
                 <ComparisonCard after="11.1" before="25.7" label="Average Position" note="14.6-position improvement, 56.8% better per report" />
               </Reveal>
             </div>
@@ -458,29 +490,35 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 title="AI Citations Grew From 21 to 91"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-              <Reveal>
-                <div className="grid gap-4">
+            <div className="grid items-stretch gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+              <Reveal className="h-full">
+                <div className="flex h-full flex-col gap-4">
                   {[
                     { label: "AI Visibility", value: "24" },
                     { label: "Mentions", value: "34" },
                     { label: "Unique Cited Pages", value: "44" }
                   ].map((item) => (
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-6" key={item.label}>
+                    <div className="flex flex-1 flex-col justify-center rounded-2xl border border-white/10 bg-white/5 p-6" key={item.label}>
                       <strong className="block text-5xl text-white">{item.value}</strong>
                       <span className="mt-3 block text-zinc-300">{item.label}</span>
                     </div>
                   ))}
                 </div>
               </Reveal>
-              <Reveal delay={0.08}>
-                <EvidenceFrame alt="AI search overview for woncom.net showing AI visibility, mentions and cited pages" src="/images/wc-ai1.png" />
+              <Reveal className="h-full" delay={0.08}>
+                <EvidenceFrame
+                  alt="AI search overview for woncom.net showing AI visibility, mentions and cited pages"
+                  className="flex h-full flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[520px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/wc-ai1.png"
+                />
               </Reveal>
             </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-4">
+            <div className="mt-6 grid items-stretch gap-4 md:grid-cols-4">
               {aiPlatforms.map((platform, index) => (
-                <Reveal delay={index * 0.035} key={platform.platform}>
-                  <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-5">
+                <Reveal className="h-full" delay={index * 0.035} key={platform.platform}>
+                  <div className="flex min-h-[150px] h-full flex-col justify-center rounded-2xl border border-white/10 bg-white/5 p-5">
                     <h3 className="text-lg text-white">{platform.platform}</h3>
                     <p className="mt-3 text-zinc-400">{platform.mentions}</p>
                     <p className="mt-1 text-zinc-500">{platform.cited}</p>
@@ -488,14 +526,26 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 </Reveal>
               ))}
             </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              <Reveal>
-                <EvidenceFrame alt="June 2026 AI performance showing 29 mentions, 21 citations and 18 cited pages" src="/images/wc-ai-performace-1.png">
+            <div className="mt-8 grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="h-full">
+                <EvidenceFrame
+                  alt="June 2026 AI performance showing 29 mentions, 21 citations and 18 cited pages"
+                  className="flex h-full min-h-[470px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[360px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/wc-ai-performace-1.png"
+                >
                   <p className="text-sm text-zinc-400">June 2026: 29 mentions, 21 citations, 18 cited pages.</p>
                 </EvidenceFrame>
               </Reveal>
-              <Reveal delay={0.08}>
-                <EvidenceFrame alt="August 2026 AI performance showing 34 mentions, 91 citations and 44 cited pages" src="/images/wc-ai-performace-2.png">
+              <Reveal className="h-full" delay={0.08}>
+                <EvidenceFrame
+                  alt="August 2026 AI performance showing 34 mentions, 91 citations and 44 cited pages"
+                  className="flex h-full min-h-[470px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[360px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/wc-ai-performace-2.png"
+                >
                   <p className="text-sm text-zinc-400">August 2026: 34 mentions, 91 citations, 44 cited pages.</p>
                 </EvidenceFrame>
               </Reveal>
@@ -528,7 +578,7 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 </Reveal>
               ))}
             </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <div className="mt-8 grid items-stretch gap-6 lg:grid-cols-3">
               {[
                 "wc-keywords-top-ranking-1.png",
                 "wc-keywords-top-ranking-2.png",
@@ -537,8 +587,14 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 "wc-keywords-top-ranking-5.png",
                 "wc-keywords-top-ranking-6.png"
               ].map((file, index) => (
-                <Reveal delay={index * 0.025} key={file}>
-                  <EvidenceFrame alt="WON Communications keyword visibility report screenshot" src={`/images/${file}`} />
+                <Reveal className="h-full" delay={index * 0.025} key={file}>
+                  <EvidenceFrame
+                    alt="WON Communications keyword visibility report screenshot"
+                    className="flex h-full min-h-[430px] flex-col"
+                    imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                    imageWrapClassName="min-h-[360px] flex-1 bg-zinc-950/70 p-3"
+                    src={`/images/${file}`}
+                  />
                 </Reveal>
               ))}
             </div>
@@ -554,9 +610,9 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 title="103 Google Business Profile Calls in July 2026"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6">
               <Reveal>
-                <div className="h-full rounded-3xl border border-white/10 bg-white/5 p-8">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
                   <Phone className="mb-6 h-8 w-8 text-[#2196F3]" />
                   <strong className="block text-6xl text-white">77 to 103</strong>
                   <p className="mt-4 text-zinc-300">Calls between the March and July Business Profile snapshots.</p>
@@ -564,12 +620,24 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                   <p className="mt-3 text-sm text-zinc-500">March 2026: -56.7% vs March 2025. July 2026: -26.4% vs July 2025.</p>
                 </div>
               </Reveal>
-              <div className="grid gap-6">
-                <Reveal delay={0.05}>
-                  <EvidenceFrame alt="Google Business Profile calls screenshot showing 77 calls in March 2026" src="/images/wc-google-profile-performance-1.png" />
+              <div className="grid items-stretch gap-6 lg:grid-cols-2">
+                <Reveal className="h-full" delay={0.05}>
+                  <EvidenceFrame
+                    alt="Google Business Profile calls screenshot showing 77 calls in March 2026"
+                    className="flex h-full min-h-[430px] flex-col"
+                    imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                    imageWrapClassName="min-h-[330px] flex-1 bg-zinc-950/70 p-3"
+                    src="/images/wc-google-profile-performance-1.png"
+                  />
                 </Reveal>
-                <Reveal delay={0.1}>
-                  <EvidenceFrame alt="Google Business Profile calls screenshot showing 103 calls in July 2026" src="/images/wc-google-profile-performance-2.png" />
+                <Reveal className="h-full" delay={0.1}>
+                  <EvidenceFrame
+                    alt="Google Business Profile calls screenshot showing 103 calls in July 2026"
+                    className="flex h-full min-h-[430px] flex-col"
+                    imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                    imageWrapClassName="min-h-[330px] flex-1 bg-zinc-950/70 p-3"
+                    src="/images/wc-google-profile-performance-2.png"
+                  />
                 </Reveal>
               </div>
             </div>
@@ -601,11 +669,11 @@ export function WonCommunicationsSeoCaseStudy({ bookingUrl, contactEmail, suppor
                 </Reveal>
               ))}
             </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              <Reveal>
+            <div className="mt-8 grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="flex h-full items-center">
                 <EvidenceFrame alt="Analytics screenshot showing 107 all users form_start events and 29 organic traffic form_start events" src="/images/wc-leads.png" />
               </Reveal>
-              <Reveal delay={0.08}>
+              <Reveal className="h-full" delay={0.08}>
                 <EvidenceFrame alt="Report screenshot showing 18 unique users clicked a call button, 14 mobile users and 4 desktop users" src="/images/wc-leads-2.png" />
               </Reveal>
             </div>

@@ -311,24 +311,30 @@ function EvidenceFrame({
   alt,
   children,
   className = "",
+  imageClassName = "h-auto w-full rounded-2xl",
+  imageWrapClassName = "bg-zinc-950/70 p-3",
   src
 }: {
   alt: string;
   children?: ReactNode;
   className?: string;
+  imageClassName?: string;
+  imageWrapClassName?: string;
   src: string;
 }) {
   return (
-    <div className={`overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30 ${className}`}>
+    <div
+      className={`overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30 ${className}`}
+    >
       <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-5 py-4">
         <span className="h-3 w-3 rounded-full bg-red-400/80" />
         <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
         <span className="h-3 w-3 rounded-full bg-green-400/80" />
       </div>
-      <div className="bg-zinc-950/70 p-3">
+      <div className={imageWrapClassName}>
         <Image
           alt={alt}
-          className="h-auto w-full rounded-2xl"
+          className={imageClassName}
           height={720}
           sizes="(max-width: 768px) 100vw, 50vw"
           src={src}
@@ -353,8 +359,8 @@ export function EssentialAutowerksSeoCaseStudy({
         <section className="relative overflow-hidden px-6 pb-20 pt-32 md:pt-36">
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-black to-black" />
           <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:40px_40px]" />
-          <div className="relative z-10 mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)] lg:items-start">
-            <Reveal>
+          <div className="relative z-10 mx-auto grid max-w-6xl items-stretch gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
+            <Reveal className="h-full">
               <div className="mb-6 inline-flex rounded-full border border-[#2196F3]/20 bg-[#2196F3]/10 px-4 py-2 text-sm text-[#2196F3]">
                 SEO Case Study
               </div>
@@ -378,21 +384,23 @@ export function EssentialAutowerksSeoCaseStudy({
               </div>
             </Reveal>
 
-            <Reveal className="grid self-start gap-4 sm:grid-cols-2" delay={0.12}>
-              {heroMetrics.map((metric, index) => (
-                <motion.div
-                  className={`min-w-0 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm ${
-                    index === 0 ? "sm:col-span-2" : ""
-                  }`}
-                  key={metric.label}
-                  whileHover={{ y: -4 }}
-                >
-                  <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
-                    {metric.value}
-                  </strong>
-                  <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
-                </motion.div>
-              ))}
+            <Reveal className="flex h-full items-center" delay={0.12}>
+              <div className="grid w-full gap-4 sm:grid-cols-2">
+                {heroMetrics.map((metric, index) => (
+                  <motion.div
+                    className={`flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm ${
+                      index === 0 ? "sm:col-span-2" : ""
+                    }`}
+                    key={metric.label}
+                    whileHover={{ y: -4 }}
+                  >
+                    <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
+                      {metric.value}
+                    </strong>
+                    <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
+                  </motion.div>
+                ))}
+              </div>
             </Reveal>
           </div>
         </section>
@@ -567,8 +575,14 @@ export function EssentialAutowerksSeoCaseStudy({
             </div>
             <div className="mt-8 grid gap-6 lg:grid-cols-3">
               {gbpScreenshots.map((screenshot, index) => (
-                <Reveal delay={index * 0.05} key={screenshot.src}>
-                  <EvidenceFrame alt={screenshot.alt} src={screenshot.src}>
+                <Reveal className="h-full" delay={index * 0.05} key={screenshot.src}>
+                  <EvidenceFrame
+                    alt={screenshot.alt}
+                    className="flex h-full flex-col"
+                    imageClassName="h-full w-full rounded-2xl object-contain"
+                    imageWrapClassName="flex h-72 items-center justify-center bg-zinc-950/70 p-3"
+                    src={screenshot.src}
+                  >
                     <p className="text-sm text-zinc-400">{screenshot.label}</p>
                   </EvidenceFrame>
                 </Reveal>
@@ -615,20 +629,23 @@ export function EssentialAutowerksSeoCaseStudy({
         </section>
 
         <section className="bg-gradient-to-b from-zinc-950 to-black px-6 py-20">
-          <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <Reveal>
-              <div className="rounded-3xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-8">
+          <div className="mx-auto grid max-w-6xl items-stretch gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <Reveal className="h-full">
+              <div className="h-full rounded-3xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-8">
                 <div className="mb-6 inline-flex rounded-full bg-black/30 px-4 py-2 text-sm text-[#2196F3]">
                   Featured SEO Result
                 </div>
                 <h2 className="text-4xl text-white md:text-5xl">#1 Local Position for "car detailing nixa"</h2>
-                <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                <div className="mt-8 grid gap-4">
                   {[
                     { label: "Keyword", value: "car detailing nixa" },
                     { label: "Position", value: "#1" },
                     { label: "Location", value: "Nixa, Missouri" }
                   ].map((item) => (
-                    <div className="rounded-2xl border border-white/10 bg-black/25 p-5" key={item.label}>
+                    <div
+                      className="rounded-2xl border border-white/10 bg-black/25 p-5"
+                      key={item.label}
+                    >
                       <span className="text-xs uppercase tracking-[0.18em] text-zinc-500">{item.label}</span>
                       <strong className="mt-3 block text-xl text-white">{item.value}</strong>
                     </div>
@@ -636,9 +653,12 @@ export function EssentialAutowerksSeoCaseStudy({
                 </div>
               </div>
             </Reveal>
-            <Reveal delay={0.08}>
+            <Reveal className="h-full" delay={0.08}>
               <EvidenceFrame
                 alt="Google local search results screenshot showing Essential Autowerks ranking number one for car detailing nixa"
+                className="flex h-full flex-col"
+                imageClassName="h-full w-full rounded-2xl object-contain"
+                imageWrapClassName="flex min-h-[360px] flex-1 items-center justify-center bg-zinc-950/70 p-3"
                 src="/images/ea-google-profile-ranking-1.png"
               >
                 <div className="flex items-center gap-3 text-zinc-300">
@@ -651,9 +671,9 @@ export function EssentialAutowerksSeoCaseStudy({
         </section>
 
         <section className="px-6 py-20">
-          <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
-            <Reveal>
-              <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-8">
+          <div className="mx-auto grid max-w-6xl items-stretch gap-6 lg:grid-cols-2">
+            <Reveal className="h-full">
+              <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-8 lg:h-[760px]">
                 <MapPin className="mb-6 h-7 w-7 text-[#2196F3]" />
                 <h2 className="text-3xl text-white">PPF Search Visibility</h2>
                 <p className="mt-5 leading-relaxed text-zinc-400">
@@ -665,10 +685,10 @@ export function EssentialAutowerksSeoCaseStudy({
                   This was useful because the business had both local Business Profile visibility and organic website
                   visibility for the same commercial-intent search.
                 </p>
-                <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950">
+                <div className="mt-6 min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950">
                   <Image
                     alt="Google search screenshot for ppf nixa showing Essential Autowerks in local results and an organic result for Professional Paint Protection Film in Nixa"
-                    className="h-auto w-full"
+                    className="h-full w-full object-cover object-top"
                     height={360}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     src="/images/ea-google-profile-ranking-3.png"
@@ -677,8 +697,8 @@ export function EssentialAutowerksSeoCaseStudy({
                 </div>
               </div>
             </Reveal>
-            <Reveal delay={0.08}>
-              <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-8">
+            <Reveal className="h-full" delay={0.08}>
+              <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-8 lg:h-[760px]">
                 <Sparkles className="mb-6 h-7 w-7 text-[#F59E0B]" />
                 <h2 className="text-3xl text-white">Beyond Google: AI Search Visibility</h2>
                 <p className="mt-5 leading-relaxed text-zinc-400">
@@ -711,27 +731,31 @@ export function EssentialAutowerksSeoCaseStudy({
             </Reveal>
           </div>
           <Reveal className="mx-auto mt-6 max-w-6xl rounded-2xl border border-white/10 bg-white/5 p-6">
-            <div className="grid gap-4 md:grid-cols-4">
-              {aiPlatforms.map((platform) => (
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-5" key={platform.platform}>
-                  <h3 className="text-lg text-white">{platform.platform}</h3>
-                  <p className="mt-3 text-zinc-400">{platform.mentions}</p>
-                  <p className="mt-1 text-zinc-500">{platform.citedPages}</p>
+            <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+              <div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {aiPlatforms.map((platform) => (
+                    <div className="rounded-2xl border border-white/10 bg-black/20 p-5" key={platform.platform}>
+                      <h3 className="text-lg text-white">{platform.platform}</h3>
+                      <p className="mt-3 text-zinc-400">{platform.mentions}</p>
+                      <p className="mt-1 text-zinc-500">{platform.citedPages}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="mt-6 rounded-2xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-5">
-              <span className="text-sm text-[#2196F3]">AI discovery example</span>
-              <p className="mt-2 text-zinc-200">
-                The report documented Essential Autowerks surfacing in ChatGPT for a question around "Best car detailer
-                in Nixa" and being presented under "Best Mobile Detailing".
-              </p>
-              <div className="mx-auto mt-5 max-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 sm:max-w-[260px]">
+                <div className="mt-6 rounded-2xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-5">
+                  <span className="text-sm text-[#2196F3]">AI discovery example</span>
+                  <p className="mt-2 text-zinc-200">
+                    The report documented Essential Autowerks surfacing in ChatGPT for a question around "Best car
+                    detailer in Nixa" and being presented under "Best Mobile Detailing".
+                  </p>
+                </div>
+              </div>
+              <div className="mx-auto w-full max-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 sm:max-w-[260px] lg:max-w-none">
                 <Image
                   alt="ChatGPT screenshot showing Essential Autowerks under Best Mobile Detailing for a best car detailer in Nixa query"
                   className="mx-auto h-auto max-h-[520px] w-full object-contain"
                   height={727}
-                  sizes="(max-width: 640px) 220px, 260px"
+                  sizes="(max-width: 640px) 220px, (max-width: 1024px) 260px, 300px"
                   src="/images/ea-ai-performace-2.png"
                   width={346}
                 />

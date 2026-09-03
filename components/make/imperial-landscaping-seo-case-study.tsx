@@ -160,16 +160,30 @@ function SectionHeading({ copy, eyebrow, title }: { copy?: string; eyebrow: stri
   );
 }
 
-function EvidenceFrame({ alt, children, src }: { alt: string; children?: ReactNode; src: string }) {
+function EvidenceFrame({
+  alt,
+  children,
+  className = "",
+  imageClassName = "h-auto w-full rounded-2xl",
+  imageWrapClassName = "bg-zinc-950/70 p-3",
+  src
+}: {
+  alt: string;
+  children?: ReactNode;
+  className?: string;
+  imageClassName?: string;
+  imageWrapClassName?: string;
+  src: string;
+}) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30">
+    <div className={`overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30 ${className}`}>
       <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-5 py-4">
         <span className="h-3 w-3 rounded-full bg-red-400/80" />
         <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
         <span className="h-3 w-3 rounded-full bg-green-400/80" />
       </div>
-      <div className="bg-zinc-950/70 p-3">
-        <Image alt={alt} className="h-auto w-full rounded-2xl" height={620} sizes="(max-width: 768px) 100vw, 50vw" src={src} width={900} />
+      <div className={imageWrapClassName}>
+        <Image alt={alt} className={imageClassName} height={620} sizes="(max-width: 768px) 100vw, 50vw" src={src} width={900} />
       </div>
       {children ? <div className="border-t border-white/10 p-5">{children}</div> : null}
     </div>
@@ -194,31 +208,33 @@ function ComparisonBar({
   const max = Math.max(current, previous);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-xl text-white">{label}</h3>
         <span className="rounded-full bg-[#F59E0B]/10 px-3 py-1 text-sm text-[#F59E0B]">{note}</span>
       </div>
-      {[
-        { label: "Previous", value: previous, valueLabel: previousLabel, tone: "bg-zinc-500" },
-        { label: "Current", value: current, valueLabel: currentLabel, tone: "bg-gradient-to-r from-[#2196F3] to-[#F59E0B]" }
-      ].map((bar) => (
-        <div className="mb-4 last:mb-0" key={bar.label}>
-          <div className="mb-2 flex justify-between text-sm text-zinc-400">
-            <span>{bar.label}</span>
-            <span>{bar.valueLabel}</span>
+      <div className="mt-auto flex min-h-[126px] flex-col justify-end">
+        {[
+          { label: "Previous", value: previous, valueLabel: previousLabel, tone: "bg-zinc-500" },
+          { label: "Current", value: current, valueLabel: currentLabel, tone: "bg-gradient-to-r from-[#2196F3] to-[#F59E0B]" }
+        ].map((bar) => (
+          <div className="mb-4 last:mb-0" key={bar.label}>
+            <div className="mb-2 flex justify-between text-sm text-zinc-400">
+              <span>{bar.label}</span>
+              <span>{bar.valueLabel}</span>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className={`h-full rounded-full ${bar.tone}`}
+                initial={{ width: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                whileInView={{ width: `${Math.max(8, (bar.value / max) * 100)}%` }}
+              />
+            </div>
           </div>
-          <div className="h-3 overflow-hidden rounded-full bg-white/10">
-            <motion.div
-              className={`h-full rounded-full ${bar.tone}`}
-              initial={{ width: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true }}
-              whileInView={{ width: `${Math.max(8, (bar.value / max) * 100)}%` }}
-            />
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -236,8 +252,8 @@ export function ImperialLandscapingSeoCaseStudy({
         <section className="relative overflow-hidden px-6 pb-20 pt-32 md:pt-36">
           <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-black to-black" />
           <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:40px_40px]" />
-          <div className="relative z-10 mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)] lg:items-start">
-            <Reveal>
+          <div className="relative z-10 mx-auto grid max-w-6xl items-stretch gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.75fr)]">
+            <Reveal className="h-full">
               <div className="mb-6 inline-flex rounded-full border border-[#2196F3]/20 bg-[#2196F3]/10 px-4 py-2 text-sm text-[#2196F3]">
                 SEO Case Study
               </div>
@@ -256,20 +272,22 @@ export function ImperialLandscapingSeoCaseStudy({
                 ))}
               </div>
             </Reveal>
-            <Reveal className="grid self-start gap-4 sm:grid-cols-2" delay={0.12}>
-              {heroMetrics.map((metric, index) => (
-                <motion.div
-                  className={`min-w-0 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm ${index === 0 ? "sm:col-span-2" : ""}`}
-                  key={metric.label}
-                  whileHover={{ y: -4 }}
-                >
-                  <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
-                    {metric.value}
-                  </strong>
-                  <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
-                  <span className="mt-2 block text-sm text-zinc-500">{metric.note}</span>
-                </motion.div>
-              ))}
+            <Reveal className="flex h-full items-center" delay={0.12}>
+              <div className="grid w-full gap-4 sm:grid-cols-2">
+                {heroMetrics.map((metric, index) => (
+                  <motion.div
+                    className={`flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm ${index === 0 ? "sm:col-span-2" : ""}`}
+                    key={metric.label}
+                    whileHover={{ y: -4 }}
+                  >
+                    <strong className="block break-words bg-gradient-to-r from-[#2196F3] to-[#F59E0B] bg-clip-text text-4xl leading-tight text-transparent md:text-[2.65rem]">
+                      {metric.value}
+                    </strong>
+                    <span className="mt-2 block text-sm uppercase tracking-[0.18em] text-zinc-400">{metric.label}</span>
+                    <span className="mt-2 block text-sm text-zinc-500">{metric.note}</span>
+                  </motion.div>
+                ))}
+              </div>
             </Reveal>
           </div>
         </section>
@@ -304,15 +322,31 @@ export function ImperialLandscapingSeoCaseStudy({
                 title="Building Broader Presence in a Competitive Local Market"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Reveal>
-                <EvidenceFrame alt="June 1 2026 keyword ranking overview showing total ranking visibility of 13" src="/images/il-keywords-ranking-1.png">
-                  <p className="text-sm text-zinc-400">June 1, 2026: ranking overview total of 13, with 0 Top 3 and 0 positions 4-10.</p>
+            <div className="grid items-stretch gap-6 lg:grid-cols-2">
+              <Reveal className="h-full">
+                <EvidenceFrame
+                  alt="June 1 2026 keyword ranking overview showing total ranking visibility of 13"
+                  className="flex h-full min-h-[680px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[560px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/il-keywords-ranking-1.png"
+                >
+                  <p className="flex min-h-[48px] items-center text-sm text-zinc-400">
+                    June 1, 2026: ranking overview total of 13, with 0 Top 3 and 0 positions 4-10.
+                  </p>
                 </EvidenceFrame>
               </Reveal>
-              <Reveal delay={0.08}>
-                <EvidenceFrame alt="August 9 2026 keyword ranking overview showing total ranking visibility of 158" src="/images/il-keywords-ranking-2.png">
-                  <p className="text-sm text-zinc-400">August 9, 2026: ranking overview total of 158, including 1 Top 3 and 2 positions 4-10.</p>
+              <Reveal className="h-full" delay={0.08}>
+                <EvidenceFrame
+                  alt="August 9 2026 keyword ranking overview showing total ranking visibility of 158"
+                  className="flex h-full min-h-[680px] flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[560px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/il-keywords-ranking-2.png"
+                >
+                  <p className="flex min-h-[48px] items-center text-sm text-zinc-400">
+                    August 9, 2026: ranking overview total of 158, including 1 Top 3 and 2 positions 4-10.
+                  </p>
                 </EvidenceFrame>
               </Reveal>
             </div>
@@ -386,27 +420,27 @@ export function ImperialLandscapingSeoCaseStudy({
             <Reveal>
               <SectionHeading eyebrow="28-Day Comparison Visual" title="The Reporting Window, Visualized" />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Reveal>
+            <div className="grid items-stretch gap-6 lg:grid-cols-3">
+              <Reveal className="h-full">
                 <ComparisonBar current={55} currentLabel="55" label="Organic Clicks" note="+450%" previous={10} previousLabel="10" />
               </Reveal>
-              <Reveal delay={0.05}>
+              <Reveal className="h-full" delay={0.05}>
                 <ComparisonBar current={5590} currentLabel="5.59K" label="Search Impressions" note="+4.88K" previous={710} previousLabel="710" />
               </Reveal>
-              <Reveal delay={0.1}>
-                <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-6">
+              <Reveal className="h-full" delay={0.1}>
+                <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6">
                   <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                     <h3 className="text-xl text-white">Average Position</h3>
                     <span className="rounded-full bg-[#F59E0B]/10 px-3 py-1 text-sm text-[#F59E0B]">
                       Improved by 5.3 positions
                     </span>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <div className="mt-auto grid min-h-[126px] gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col justify-center rounded-2xl border border-white/10 bg-black/20 p-5">
                       <span className="text-sm text-zinc-500">Previous</span>
                       <strong className="mt-2 block text-4xl text-white">18.8</strong>
                     </div>
-                    <div className="rounded-2xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-5">
+                    <div className="flex flex-col justify-center rounded-2xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-5">
                       <span className="text-sm text-zinc-400">Latest</span>
                       <strong className="mt-2 block text-4xl text-white">13.5</strong>
                     </div>
@@ -499,17 +533,32 @@ export function ImperialLandscapingSeoCaseStudy({
             </Reveal>
             <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
               {organicKeywords.map((keyword) => (
-                <div className="grid gap-3 border-b border-white/10 p-5 last:border-b-0 md:grid-cols-[1fr_auto_auto] md:items-center" key={keyword.keyword}>
+                <div
+                  className="grid gap-3 border-b border-white/10 p-5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_140px_110px] md:items-center"
+                  key={keyword.keyword}
+                >
                   <span className="break-words text-white">{keyword.keyword}</span>
-                  <span className="rounded-full bg-[#2196F3]/10 px-4 py-2 text-sm text-[#2196F3]">{keyword.position}</span>
-                  <span className="text-sm text-zinc-400">Volume {keyword.volume}</span>
+                  <span
+                    className={`justify-self-start rounded-full bg-[#2196F3]/10 px-4 py-2 text-center text-sm text-[#2196F3] md:justify-self-center ${
+                      keyword.position.includes("organic") ? "min-w-[120px]" : "min-w-[64px]"
+                    }`}
+                  >
+                    {keyword.position}
+                  </span>
+                  <span className="text-sm text-zinc-400 md:w-[110px]">Volume {keyword.volume}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <div className="mt-8 grid items-stretch gap-6 lg:grid-cols-3">
               {["il-keywords-top-ranking-1.png", "il-keywords-top-ranking-2.png", "il-keywords-top-ranking-3.png"].map((file, index) => (
-                <Reveal delay={index * 0.05} key={file}>
-                  <EvidenceFrame alt="Imperial Landscaping keyword ranking report screenshot" src={`/images/${file}`} />
+                <Reveal className="h-full" delay={index * 0.05} key={file}>
+                  <EvidenceFrame
+                    alt="Imperial Landscaping keyword ranking report screenshot"
+                    className="flex h-full min-h-[500px] flex-col"
+                    imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                    imageWrapClassName="min-h-[430px] flex-1 bg-zinc-950/70 p-3"
+                    src={`/images/${file}`}
+                  />
                 </Reveal>
               ))}
             </div>
@@ -517,16 +566,16 @@ export function ImperialLandscapingSeoCaseStudy({
         </section>
 
         <section className="px-6 py-20">
-          <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_0.9fr]">
+          <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-center">
             <Reveal>
-              <div className="rounded-3xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-8">
+              <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-[#2196F3]/20 bg-[#2196F3]/10 p-8 text-center">
                 <MapPin className="mb-6 h-7 w-7 text-[#2196F3]" />
                 <h2 className="text-4xl text-white md:text-5xl">#3 Local Visibility for "landscaping springfield mo"</h2>
-                <p className="mt-5 leading-relaxed text-zinc-300">
+                <p className="mt-5 max-w-2xl leading-relaxed text-zinc-300">
                   The campaign report documented Imperial Landscaping LLC at approximately #3 in the displayed
                   local/business results for this high-intent Springfield query.
                 </p>
-                <p className="mt-4 leading-relaxed text-zinc-400">
+                <p className="mt-4 max-w-2xl leading-relaxed text-zinc-400">
                   The organic keyword report separately shows "landscaping springfield mo" at organic position #15, so
                   this page treats local/business visibility and organic visibility as different search surfaces.
                 </p>
@@ -547,9 +596,9 @@ export function ImperialLandscapingSeoCaseStudy({
                 title="17 Calls Made From the Business Profile"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-[0.65fr_1.35fr]">
+            <div className="grid gap-6 lg:grid-cols-[0.65fr_1.35fr] lg:items-center">
               <Reveal>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
                   <Phone className="mb-6 h-7 w-7 text-[#2196F3]" />
                   <strong className="block text-6xl text-white">17</strong>
                   <p className="mt-4 text-zinc-300">Calls Made From the Business Profile</p>
@@ -572,9 +621,9 @@ export function ImperialLandscapingSeoCaseStudy({
                 title="Google Business Profile Search Discovery"
               />
             </Reveal>
-            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-              <Reveal>
-                <div className="grid gap-4">
+            <div className="grid items-stretch gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+              <Reveal className="h-full">
+                <div className="flex h-full flex-col gap-4">
                   <div className="rounded-2xl border border-[#F59E0B]/20 bg-[#F59E0B]/10 p-6">
                     <strong className="block text-5xl text-white">178</strong>
                     <p className="mt-3 text-zinc-300">Searches for "landscaping springfield mo"</p>
@@ -583,7 +632,7 @@ export function ImperialLandscapingSeoCaseStudy({
                     <strong className="block text-4xl text-white">17</strong>
                     <p className="mt-3 text-zinc-300">Searches for "landscapers near me"</p>
                   </div>
-                  <div className="max-h-[420px] overflow-auto rounded-2xl border border-white/10 bg-white/5">
+                  <div className="min-h-[560px] flex-1 overflow-auto rounded-2xl border border-white/10 bg-white/5 lg:min-h-[640px]">
                     {discoverySearches.map((item) => (
                       <div className="flex justify-between gap-4 border-b border-white/10 p-4 last:border-b-0" key={item.query}>
                         <span className="break-words text-zinc-300">{item.query}</span>
@@ -593,8 +642,14 @@ export function ImperialLandscapingSeoCaseStudy({
                   </div>
                 </div>
               </Reveal>
-              <Reveal delay={0.08}>
-                <EvidenceFrame alt="Google Business Profile searches breakdown for Imperial Landscaping" src="/images/il-searches.png" />
+              <Reveal className="h-full" delay={0.08}>
+                <EvidenceFrame
+                  alt="Google Business Profile searches breakdown for Imperial Landscaping"
+                  className="flex h-full flex-col"
+                  imageClassName="h-full w-full rounded-2xl object-cover object-left-top"
+                  imageWrapClassName="min-h-[760px] flex-1 bg-zinc-950/70 p-3"
+                  src="/images/il-searches.png"
+                />
               </Reveal>
             </div>
           </div>
