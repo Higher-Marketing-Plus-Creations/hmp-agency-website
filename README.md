@@ -69,3 +69,6 @@ If Sanity is not configured, the app serves local fallback content from `lib/con
 ## Utility routes
 
 Portal and utility routes are intentionally marked `noindex` so the public marketing surface stays focused on commercial and editorial intent.
+
+
+<!-- Security scan triggered at 2026-09-04 12:56:07 -->
