@@ -257,7 +257,7 @@ export function ImperialLandscapingSeoCaseStudy({
               <div className="mb-6 inline-flex rounded-full border border-[#2196F3]/20 bg-[#2196F3]/10 px-4 py-2 text-sm text-[#2196F3]">
                 SEO Case Study
               </div>
-              <h1 className="max-w-4xl bg-gradient-to-r from-white via-zinc-100 to-zinc-400 bg-clip-text text-5xl leading-[0.98] text-transparent md:text-6xl lg:text-7xl">
+              <h1 className="max-w-4xl bg-gradient-to-r from-white via-zinc-100 to-zinc-400 bg-clip-text pb-2 text-5xl leading-[1.08] text-transparent md:text-6xl lg:text-7xl">
                 Growing Imperial Landscaping's Search Visibility in Springfield
               </h1>
               <p className="mt-8 max-w-3xl text-lg leading-relaxed text-zinc-400 md:text-xl">
